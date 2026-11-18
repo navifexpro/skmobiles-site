@@ -61,7 +61,7 @@ h2{font-size:17px;font-weight:800;margin:30px 0 10px}
 .vids{display:flex;flex-direction:column;gap:12px;margin-top:12px}
 .vid{border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(4,15,31,.45)}
 .vid .top{display:flex;gap:12px;align-items:center}
-.vid video{width:64px;height:88px;object-fit:cover;border-radius:10px;background:#000;flex:none}
+.vid video,.vid .pv{width:64px;height:88px;object-fit:cover;border-radius:10px;background:#000;flex:none}
 .vid .meta{flex:1;min-width:0;font-size:13px;color:var(--mut)}
 .vid .meta b{display:block;color:var(--tx);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vid .x{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--tx);font-size:16px;cursor:pointer;flex:none}
@@ -104,7 +104,7 @@ h2{font-size:17px;font-weight:800;margin:30px 0 10px}
    </button>
    <button type="button" class="tile" id="goLab">
     <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/></svg></span>
-    <b>Repairing Lab</b><small>Upload today's repair videos with their topic.</small>
+    <b>Repairing Lab</b><small>Upload today's repair videos and before/after photos.</small>
    </button>
   </div>
  </section>
@@ -113,12 +113,12 @@ h2{font-size:17px;font-weight:800;margin:30px 0 10px}
  <section class="hide" id="lab">
   <button type="button" class="back" data-back>← Back</button>
   <div class="card">
-   <h1>Daily <span>Repair Videos</span></h1>
-   <p class="sub">Add videos, write the topic under each one, then press Upload.</p>
-   <label class="pick" for="vfiles"><b>+ Add videos</b>Camera or gallery, one or many<input type="file" id="vfiles" accept="video/*" multiple></label>
+   <h1>Daily <span>Repair Media</span></h1>
+   <p class="sub">Add videos or photos, write the topic under each one, then press Upload.</p>
+   <label class="pick" for="vfiles"><b>+ Add videos or photos</b>Camera or gallery, one or many<input type="file" id="vfiles" accept="video/*,image/*" multiple></label>
    <div class="vids" id="vids"></div>
-   <p class="hint">Topic example: "iPhone 11 dead, CPU reball, phone ON at the end". Write what the phone was, the problem and the result.</p>
-   <button class="btn" type="button" id="upBtn">Upload videos</button>
+   <p class="hint">Write in the topic if it is a <b>BEFORE</b> or <b>AFTER</b> photo/video. Example: "iPhone 11 dead, CPU reball, phone ON. AFTER video" or "Samsung A52 broken screen. BEFORE photo".</p>
+   <button class="btn" type="button" id="upBtn">Upload</button>
    <div class="msg" id="labMsg"></div>
   </div>
   <h2>Recently uploaded</h2>
@@ -290,14 +290,14 @@ function drawVids(){
  vids.forEach(function(v,i){
   var d=document.createElement('div');d.className='vid';
   var top=document.createElement('div');top.className='top';
-  var pv=document.createElement('video');pv.src=v.url+'#t=0.5';pv.muted=true;pv.playsInline=true;pv.preload='metadata';
+  var pv;if(v.isImg){pv=document.createElement('img');pv.src=v.url;pv.alt='';pv.className='pv'}else{pv=document.createElement('video');pv.src=v.url+'#t=0.5';pv.muted=true;pv.playsInline=true;pv.preload='metadata'}
   var meta=document.createElement('div');meta.className='meta';
-  var nm=document.createElement('b');nm.textContent='Video '+(i+1);meta.appendChild(nm);
+  var nm=document.createElement('b');nm.textContent=(v.isImg?'Photo ':'Video ')+(i+1);meta.appendChild(nm);
   meta.appendChild(document.createTextNode(v.file.name+' · '+mb(v.file.size)));
-  var x=document.createElement('button');x.type='button';x.className='x';x.textContent='×';x.setAttribute('aria-label','Remove video');
+  var x=document.createElement('button');x.type='button';x.className='x';x.textContent='×';x.setAttribute('aria-label','Remove');
   x.disabled=busy;x.onclick=function(){URL.revokeObjectURL(v.url);vids.splice(i,1);drawVids()};
   top.appendChild(pv);top.appendChild(meta);top.appendChild(x);
-  var ta=document.createElement('textarea');ta.placeholder='Topic of this video: phone, problem, what was done, result';ta.maxLength=300;ta.value=v.topic;
+  var ta=document.createElement('textarea');ta.placeholder='Topic: phone, problem, what was done, result + BEFORE or AFTER';ta.maxLength=300;ta.value=v.topic;
   ta.disabled=busy||v.state==='done';ta.oninput=function(){v.topic=ta.value};
   var bar=document.createElement('div');bar.className='bar'+(v.state==='wait'?' hide':'');var fill=document.createElement('i');fill.style.width=v.pct+'%';bar.appendChild(fill);
   var st=document.createElement('div');st.className='st'+(v.state==='done'?' ok':v.state==='fail'?' bad':'');st.textContent=v.note||'';
@@ -307,7 +307,8 @@ function drawVids(){
 }
 $('vfiles').addEventListener('change',function(){
  Array.prototype.forEach.call(this.files,function(f){
-  if(/^video\//.test(f.type)||/\.(mp4|mov|3gp|mkv|webm)$/i.test(f.name))vids.push({file:f,url:URL.createObjectURL(f),topic:'',state:'wait',pct:0,note:''});
+  var img=/^image\//.test(f.type)||/\.(jpe?g|png|heic|heif|webp)$/i.test(f.name);
+  if(img||/^video\//.test(f.type)||/\.(mp4|mov|3gp|mkv|webm)$/i.test(f.name))vids.push({file:f,isImg:img,url:URL.createObjectURL(f),topic:'',state:'wait',pct:0,note:''});
  });
  this.value='';drawVids();
 });
@@ -325,7 +326,7 @@ function retry(fn,tries){
  .catch(function(e){if(tries<=1)throw e;return sleep(3000).then(function(){return retry(fn,tries-1)})});
 }
 function sendVideo(v){
- var f=v.file,mime=f.type||'video/mp4';
+ var f=v.file,mime=f.type||(v.isImg?'image/jpeg':'video/mp4');
  setV(v,1,'Starting…','up');
  return retry(function(){return call({action:'videoStart',user:cred.user,pass:cred.pass,topic:v.topic.trim(),name:f.name,mime:mime,size:f.size})},3)
  .then(function(s){
@@ -355,16 +356,16 @@ window.addEventListener('beforeunload',function(e){if(busy){e.preventDefault();e
 $('upBtn').addEventListener('click',function(){
  var m=$('labMsg');hideMsg(m);
  var todo=vids.filter(function(v){return v.state!=='done'});
- if(!todo.length){show(m,vids.length?'All videos are already uploaded.':'Add at least one video.',false);return}
- for(var i=0;i<todo.length;i++){if(!todo[i].topic.trim()){show(m,'Write the topic under every video.',false);return}}
+ if(!todo.length){show(m,vids.length?'Everything is already uploaded.':'Add at least one video or photo.',false);return}
+ for(var i=0;i<todo.length;i++){if(!todo[i].topic.trim()){show(m,'Write the topic under every video and photo.',false);return}}
  busy=true;drawVids();var btn=$('upBtn');btn.disabled=true;btn.textContent='Uploading… keep this page open';keepAwake(true);
  var ok=0,bad=0;
  todo.reduce(function(p,v){
   return p.then(function(){return sendVideo(v).then(function(){ok++}).catch(function(e){bad++;setV(v,v.pct,'Failed: '+(e.message||'check internet')+'. Press Upload again.','fail')})});
  },Promise.resolve()).then(function(){
-  busy=false;keepAwake(false);btn.disabled=false;btn.textContent='Upload videos';
+  busy=false;keepAwake(false);btn.disabled=false;btn.textContent='Upload';
   if(bad)show(m,ok+' uploaded, '+bad+' failed. Press Upload again to retry the failed ones.',false);
-  else{show(m,'All '+ok+' video(s) uploaded ✓ Thank you!',true);
+  else{show(m,'All '+ok+' file(s) uploaded ✓ Thank you!',true);
    setTimeout(function(){vids.forEach(function(v){URL.revokeObjectURL(v.url)});vids=[];drawVids()},2500)}
   drawVids();loadVids();
  });
@@ -372,7 +373,7 @@ $('upBtn').addEventListener('click',function(){
 function loadVids(){
  call({action:'videoRecent',user:cred.user,pass:cred.pass}).then(function(r){
   var box=$('vlist');box.innerHTML='';
-  if(!r.ok||!r.items.length){box.innerHTML='<p class="sub">No videos uploaded yet.</p>';return}
+  if(!r.ok||!r.items.length){box.innerHTML='<p class="sub">Nothing uploaded yet.</p>';return}
   r.items.forEach(function(it){
    var d=document.createElement('div');d.className='item';
    var l=document.createElement('div');l.textContent=it.name;
