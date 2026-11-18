@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /ghizar
+Disallow: /khizar
 
 Sitemap: https://skmobiles.com/sitemap.xml
