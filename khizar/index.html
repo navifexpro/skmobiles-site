@@ -65,6 +65,8 @@ h2{font-size:17px;font-weight:800;margin:30px 0 10px}
 .vid .meta{flex:1;min-width:0;font-size:13px;color:var(--mut)}
 .vid .meta b{display:block;color:var(--tx);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vid .x{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:none;color:var(--tx);font-size:16px;cursor:pointer;flex:none}
+.topic{display:block;width:100%;font:inherit;font-size:15px;color:var(--tx);background:rgba(4,15,31,.6);border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;resize:vertical;min-height:80px}
+.topic:focus{border-color:var(--or)}
 .vid textarea{width:100%;margin-top:10px;font:inherit;font-size:15px;color:var(--tx);background:rgba(4,15,31,.6);border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;resize:vertical;min-height:64px}
 .vid textarea:focus{border-color:var(--or)}
 .vid .st{font-size:13px;margin-top:8px;color:var(--mut)}
@@ -114,10 +116,13 @@ h2{font-size:17px;font-weight:800;margin:30px 0 10px}
   <button type="button" class="back" data-back>← Back</button>
   <div class="card">
    <h1>Daily <span>Repair Media</span></h1>
-   <p class="sub">Add videos or photos, write the topic under each one, then press Upload.</p>
+   <p class="sub">One batch = one repair. Add its photos and videos, write one topic, then press Upload.</p>
+   <label for="btopic">1. Topic of this batch</label>
+   <textarea id="btopic" class="topic" maxlength="400" placeholder="Phone, problem, what was done, result. Say which are BEFORE and which are AFTER."></textarea>
+   <label>2. Photos and videos</label>
    <label class="pick" for="vfiles"><b>+ Add videos or photos</b>Camera or gallery, one or many<input type="file" id="vfiles" accept="video/*,image/*" multiple></label>
    <div class="vids" id="vids"></div>
-   <p class="hint">Write in the topic if it is a <b>BEFORE</b> or <b>AFTER</b> photo/video. Example: "iPhone 11 dead, CPU reball, phone ON. AFTER video" or "Samsung A52 broken screen. BEFORE photo".</p>
+   <p class="hint">Topic example: "iPhone 11 dead, CPU reball, phone ON. 2 BEFORE photos, 1 AFTER video." For the next repair, upload a new batch.</p>
    <button class="btn" type="button" id="upBtn">Upload</button>
    <div class="msg" id="labMsg"></div>
   </div>
@@ -297,11 +302,9 @@ function drawVids(){
   var x=document.createElement('button');x.type='button';x.className='x';x.textContent='×';x.setAttribute('aria-label','Remove');
   x.disabled=busy;x.onclick=function(){URL.revokeObjectURL(v.url);vids.splice(i,1);drawVids()};
   top.appendChild(pv);top.appendChild(meta);top.appendChild(x);
-  var ta=document.createElement('textarea');ta.placeholder='Topic: phone, problem, what was done, result + BEFORE or AFTER';ta.maxLength=300;ta.value=v.topic;
-  ta.disabled=busy||v.state==='done';ta.oninput=function(){v.topic=ta.value};
   var bar=document.createElement('div');bar.className='bar'+(v.state==='wait'?' hide':'');var fill=document.createElement('i');fill.style.width=v.pct+'%';bar.appendChild(fill);
   var st=document.createElement('div');st.className='st'+(v.state==='done'?' ok':v.state==='fail'?' bad':'');st.textContent=v.note||'';
-  d.appendChild(top);d.appendChild(ta);d.appendChild(bar);d.appendChild(st);box.appendChild(d);
+  d.appendChild(top);d.appendChild(bar);d.appendChild(st);box.appendChild(d);
   v.ui={fill:fill,bar:bar,st:st};
  });
 }
@@ -325,11 +328,13 @@ function retry(fn,tries){
  return fn().then(function(r){if(!r||!r.ok)throw new Error((r&&r.error)||'Server error');return r})
  .catch(function(e){if(tries<=1)throw e;return sleep(3000).then(function(){return retry(fn,tries-1)})});
 }
+var batch={topic:'',folderId:''};
 function sendVideo(v){
  var f=v.file,mime=f.type||(v.isImg?'image/jpeg':'video/mp4');
  setV(v,1,'Starting…','up');
- return retry(function(){return call({action:'videoStart',user:cred.user,pass:cred.pass,topic:v.topic.trim(),name:f.name,mime:mime,size:f.size})},3)
+ return retry(function(){return call({action:'videoStart',user:cred.user,pass:cred.pass,topic:batch.topic,folderId:batch.folderId||'',name:f.name,mime:mime,size:f.size})},3)
  .then(function(s){
+  batch.folderId=s.folderId;
   var pos=0;
   function next(){
    if(pos>=f.size)return Promise.resolve();
@@ -357,16 +362,18 @@ $('upBtn').addEventListener('click',function(){
  var m=$('labMsg');hideMsg(m);
  var todo=vids.filter(function(v){return v.state!=='done'});
  if(!todo.length){show(m,vids.length?'Everything is already uploaded.':'Add at least one video or photo.',false);return}
- for(var i=0;i<todo.length;i++){if(!todo[i].topic.trim()){show(m,'Write the topic under every video and photo.',false);return}}
+ var tp=$('btopic').value.trim();if(!tp){show(m,'Write the topic of this batch.',false);$('btopic').focus();return}
+ if(batch.topic!==tp){batch={topic:tp,folderId:''}}
+ $('btopic').disabled=true;
  busy=true;drawVids();var btn=$('upBtn');btn.disabled=true;btn.textContent='Uploading… keep this page open';keepAwake(true);
  var ok=0,bad=0;
  todo.reduce(function(p,v){
   return p.then(function(){return sendVideo(v).then(function(){ok++}).catch(function(e){bad++;setV(v,v.pct,'Failed: '+(e.message||'check internet')+'. Press Upload again.','fail')})});
  },Promise.resolve()).then(function(){
-  busy=false;keepAwake(false);btn.disabled=false;btn.textContent='Upload';
+  busy=false;keepAwake(false);btn.disabled=false;btn.textContent='Upload';$('btopic').disabled=false;
   if(bad)show(m,ok+' uploaded, '+bad+' failed. Press Upload again to retry the failed ones.',false);
   else{show(m,'All '+ok+' file(s) uploaded ✓ Thank you!',true);
-   setTimeout(function(){vids.forEach(function(v){URL.revokeObjectURL(v.url)});vids=[];drawVids()},2500)}
+   setTimeout(function(){vids.forEach(function(v){URL.revokeObjectURL(v.url)});vids=[];batch={topic:'',folderId:''};$('btopic').value='';drawVids()},2500)}
   drawVids();loadVids();
  });
 });
