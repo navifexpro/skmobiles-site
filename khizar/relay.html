@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>SK relay</title><meta name="robots" content="noindex, nofollow"></head>
+<body style="font-family:system-ui;padding:24px"><p id="s">Waiting for image...</p>
+<script>
+var API='https://script.google.com/macros/s/AKfycbwCPT3M6II1A2MRC0Ep93vask6cOW1hvLs1b1HxB8oSLHPJhnaU_G1O7TGl-K1cKJO7Cw/exec';
+var S=document.getElementById('s');
+window.addEventListener('message',function(e){
+  var d=e.data; if(!d||d.kind!=='sk-asset') return;
+  S.textContent='Uploading '+d.name+' ...';
+  fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'asset',user:d.user,pass:d.pass,name:d.name,mime:d.mime,data:d.data})})
+  .then(function(r){return r.json()})
+  .then(function(r){S.textContent=JSON.stringify(r); try{e.source.postMessage({kind:'sk-asset-done',r:r},'*')}catch(x){} if(r.ok) setTimeout(function(){window.close()},1500);})
+  .catch(function(err){S.textContent='Error: '+err.message;});
+});
+if(window.opener) window.opener.postMessage({kind:'sk-relay-ready'},'*');
+</script></body></html>
