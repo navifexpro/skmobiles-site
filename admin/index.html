@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SK Mobiles – Admin</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0B2545">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:Poppins;src:url(/assets/fonts/poppins-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:Poppins;src:url(/assets/fonts/poppins-latin-500-normal.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:Poppins;src:url(/assets/fonts/poppins-latin-600-normal.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:Poppins;src:url(/assets/fonts/poppins-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
+:root{--navy:#0B2545;--navy2:#13315c;--ink:#040f1f;--or:#F26B0F;--or2:#ff8a3d;--bg:#f4f6fa;--card:#fff;--tx:#14213a;--mut:#64748b;--line:#e2e8f0;--ok:#16a34a;--bad:#dc2626;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Poppins,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--tx);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.hide{display:none!important}
+a{color:var(--or)}
+
+/* ---------- Login ---------- */
+.auth{min-height:100vh;min-height:100dvh;display:grid;grid-template-columns:1.1fr 1fr}
+.brand{position:relative;overflow:hidden;color:#fff;background:var(--navy);display:flex;flex-direction:column;justify-content:space-between;padding:44px 48px}
+.brand::before{content:"";position:absolute;inset:0;background:url(/assets/img/lab-4.webp) center/cover no-repeat;opacity:.28;filter:saturate(.7)}
+.brand::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(11,37,69,.55) 0%,rgba(6,22,43,.92) 70%,#040f1f 100%)}
+.brand>*{position:relative;z-index:1}
+.brand img{width:210px;height:auto}
+.brand h2{font-size:clamp(28px,3.2vw,40px);line-height:1.2;font-weight:700;max-width:460px}
+.brand h2 span{color:var(--or2)}
+.brand p{color:#c5d3e6;margin-top:14px;max-width:420px;font-size:15px}
+.brand small{color:#8fa6c4;font-size:13px}
+.panel{display:flex;align-items:center;justify-content:center;padding:40px 24px;background:#fff}
+.form{width:100%;max-width:380px}
+.form h1{font-size:28px;font-weight:700;color:var(--navy)}
+.form .sub{color:var(--mut);margin:6px 0 26px;font-size:14.5px}
+label{display:block;font-size:13.5px;font-weight:500;margin:16px 0 7px;color:#334155}
+.inp{width:100%;font-size:16px;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;outline:none;transition:border-color .2s,box-shadow .2s}
+.inp:focus{border-color:var(--or);box-shadow:0 0 0 4px rgba(242,107,15,.12)}
+.pw{position:relative}
+.pw .inp{padding-right:50px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:var(--mut)}
+.eye:hover{background:#f1f5f9;color:var(--navy)}
+.row2{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;font-size:14px}
+.chk{display:flex;align-items:center;gap:8px;margin:0;font-weight:400;color:#334155;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--or)}
+.link{background:none;border:0;color:var(--or);font-weight:500;font-size:14px;padding:4px 0}
+.link:hover{text-decoration:underline}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:24px;padding:14px;border:0;border-radius:12px;background:var(--or);color:#fff;font-weight:600;font-size:16px;transition:background .2s,transform .05s}
+.btn:hover{background:#e05f08}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+.btn.ghost:hover{background:#f8fafc}
+.btn.sm{width:auto;margin:0;padding:9px 16px;font-size:14px;border-radius:10px}
+.msg{margin-top:14px;padding:11px 13px;border-radius:10px;font-size:14px}
+.msg.err{background:#fef2f2;color:var(--bad);border:1px solid #fecaca}
+.msg.ok{background:#f0fdf4;color:var(--ok);border:1px solid #bbf7d0}
+.foot{margin-top:28px;font-size:12.5px;color:#94a3b8;text-align:center}
+.mobilelogo{display:none}
+
+@media (max-width:860px){
+ .auth{grid-template-columns:1fr}
+ .brand{display:none}
+ .panel{align-items:flex-start;padding:0 0 32px;background:var(--bg)}
+ .mobilelogo{display:flex;align-items:center;justify-content:center;width:100%;padding:34px 20px 70px;background:linear-gradient(160deg,var(--navy),#040f1f)}
+ .mobilelogo img{width:190px;height:auto}
+ .form{max-width:440px;margin:-46px 16px 0;background:#fff;border-radius:20px;padding:28px 22px;box-shadow:0 10px 30px rgba(4,15,31,.12)}
+ .wrapm{width:100%;display:flex;flex-direction:column;align-items:center}
+}
+
+/* ---------- Dashboard ---------- */
+.app{min-height:100vh;display:grid;grid-template-columns:240px 1fr}
+.side{background:var(--navy);color:#fff;padding:24px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.side img{width:160px;height:auto;margin:0 8px 26px}
+.nav{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:0;border-radius:12px;background:none;color:#c5d3e6;font-weight:500;text-align:left}
+.nav:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav.on{background:var(--or);color:#fff}
+.side .grow{flex:1}
+.side .me{font-size:13px;color:#8fa6c4;padding:0 10px 10px}
+.side .me b{color:#fff;font-weight:600}
+.main{padding:28px 32px 60px;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.top h1{font-size:24px;color:var(--navy)}
+.top p{color:var(--mut);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.tools .inp{max-width:260px;padding:10px 12px;font-size:14.5px}
+.tools select.inp{max-width:200px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.stat b{display:block;font-size:26px;color:var(--navy);line-height:1.2}
+.stat span{font-size:13px;color:var(--mut)}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:left;font-weight:600;color:var(--mut);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#f8fafc}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12.5px;font-weight:500;background:#eef2f7;color:#334155;white-space:nowrap}
+.pill.or{background:#fff1e7;color:#c2510a}
+.pill.gr{background:#ecfdf3;color:#15803d}
+.pill.gy{background:#f1f5f9;color:#94a3b8}
+.empty{padding:40px 10px;text-align:center;color:var(--mut)}
+.muted{color:var(--mut);font-size:13px}
+.uplist{display:grid;gap:10px}
+.up{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.up b{font-weight:600;display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid2 .card h3{font-size:17px;color:var(--navy);margin-bottom:4px}
+.mobtabs{display:none}
+
+/* Drawer */
+.shade{position:fixed;inset:0;background:rgba(4,15,31,.45);z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:#fff;z-index:21;overflow:auto;padding:24px 24px 40px;box-shadow:-10px 0 40px rgba(4,15,31,.2)}
+.drawer h2{font-size:20px;color:var(--navy);padding-right:48px}
+#dMeta{padding-right:48px}
+.x{position:absolute;right:16px;top:16px;width:40px;height:40px;border-radius:10px;border:0;background:#f1f5f9;font-size:20px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px}
+.sw{position:relative;width:46px;height:26px;flex:none}
+.sw input{opacity:0;width:0;height:0}
+.sw i{position:absolute;inset:0;background:#cbd5e1;border-radius:99px;transition:.2s}
+.sw i::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.sw input:checked+i{background:var(--ok)}
+.sw input:checked+i::after{transform:translateX(20px)}
+.photos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.ph{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:#f1f5f9;border:1px solid var(--line)}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph button{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(4,15,31,.7);color:#fff;font-size:15px}
+.addph{display:grid;place-items:center;aspect-ratio:1;border:1.5px dashed #cbd5e1;border-radius:12px;color:var(--mut);font-size:13px;text-align:center;cursor:pointer;margin:0;font-weight:500}
+.addph input{display:none}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;z-index:40;box-shadow:0 8px 24px rgba(4,15,31,.25)}
+.spin{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+@media (max-width:860px){
+ .app{grid-template-columns:1fr}
+ .side{display:none}
+ .main{padding:0 14px 90px}
+ .mhead{display:flex!important;align-items:center;justify-content:space-between;background:var(--navy);margin:0 -14px 18px;padding:14px 16px}
+ .mhead img{width:130px;height:auto}
+ .mhead button{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:10px;padding:8px 12px;font-size:13px}
+ .mobtabs{display:flex;position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);z-index:15;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+ .mobtabs button{flex:1;border:0;background:none;padding:8px 4px;border-radius:10px;font-size:12px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px}
+ .mobtabs button.on{color:var(--or);font-weight:600}
+ .stats{grid-template-columns:1fr 1fr}
+ .grid2{grid-template-columns:1fr}
+ .card{padding:16px;border-radius:16px}
+ .tools .inp{max-width:none;flex:1 1 140px}
+ table thead{display:none}
+ table,tbody,tr,td{display:block;width:100%}
+ tbody tr{border-bottom:1px solid var(--line);padding:10px 0}
+ tbody tr:last-child{border-bottom:0}
+ td{border:0;padding:3px 4px}
+ td[data-l]{display:inline-block;width:auto;margin-right:14px}
+ td[data-l]::before{content:attr(data-l)": ";color:var(--mut);font-size:12.5px}
+ td.nm{font-weight:600;font-size:15px}
+ .drawer{padding:20px 16px 40px}
+}
+.mhead{display:none}
+@media (min-width:1600px){.main{padding:36px 56px}.stats{gap:18px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div class="auth hide" id="auth">
+ <aside class="brand">
+  <img src="/assets/img/logo.webp" alt="SK Mobiles Repairing Lab" width="375" height="120">
+  <div>
+   <h2>Trusted hands for <span>every phone.</span></h2>
+   <p>Admin panel for SK Mobiles Repairing Lab. Manage shop products, check daily repair uploads and keep your login safe.</p>
+  </div>
+  <small>© SK Mobiles Repairing Lab · Manga Mandi, Lahore</small>
+ </aside>
+
+ <main class="panel">
+  <div class="wrapm">
+   <div class="mobilelogo"><img src="/assets/img/logo.webp" alt="SK Mobiles Repairing Lab" width="375" height="120"></div>
+
+   <!-- Login form -->
+   <form class="form" id="loginForm" autocomplete="on" novalidate>
+    <h1>Welcome back</h1>
+    <p class="sub">Log in to the SK Mobiles admin panel.</p>
+    <label for="lu">Username</label>
+    <input class="inp" id="lu" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+    <label for="lp">Password</label>
+    <div class="pw">
+     <input class="inp" type="password" id="lp" name="password" autocomplete="current-password" required>
+     <button type="button" class="eye" data-eye="lp" aria-label="Show password"></button>
+    </div>
+    <div class="row2">
+     <label class="chk"><input type="checkbox" id="rem"> Remember me</label>
+     <button type="button" class="link" id="toForgot">Forgot password?</button>
+    </div>
+    <button class="btn" id="loginBtn" type="submit">Log in</button>
+    <div class="msg hide" id="loginMsg"></div>
+    <p class="foot">Staff only. Every login is checked.</p>
+   </form>
+
+   <!-- Forgot: step 1 -->
+   <div class="form hide" id="forgot1">
+    <h1>Forgot password?</h1>
+    <p class="sub">We'll send a 6-digit code to the SK Mobiles email. The code works for 15 minutes.</p>
+    <button class="btn" id="sendCode" type="button">Send code</button>
+    <button class="btn ghost" type="button" data-tologin>Back to login</button>
+    <div class="msg hide" id="f1Msg"></div>
+   </div>
+
+   <!-- Forgot: step 2 -->
+   <form class="form hide" id="forgot2" novalidate>
+    <h1>Set a new password</h1>
+    <p class="sub" id="f2Sub">Enter the code from the email and your new password.</p>
+    <label for="fc">6-digit code</label>
+    <input class="inp" id="fc" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+    <label for="fp">New password</label>
+    <div class="pw">
+     <input class="inp" type="password" id="fp" autocomplete="new-password" required>
+     <button type="button" class="eye" data-eye="fp" aria-label="Show password"></button>
+    </div>
+    <label for="fp2">Type it again</label>
+    <div class="pw">
+     <input class="inp" type="password" id="fp2" autocomplete="new-password" required>
+     <button type="button" class="eye" data-eye="fp2" aria-label="Show password"></button>
+    </div>
+    <p class="muted" style="margin-top:8px">At least 8 characters, with letters and numbers.</p>
+    <button class="btn" id="resetBtn" type="submit">Save new password</button>
+    <button class="btn ghost" type="button" id="resend">Send a new code</button>
+    <div class="msg hide" id="f2Msg"></div>
+   </form>
+  </div>
+ </main>
+</div>
+
+<!-- ================= DASHBOARD ================= -->
+<div class="app hide" id="app">
+ <aside class="side">
+  <img src="/assets/img/logo.webp" alt="SK Mobiles Repairing Lab" width="375" height="120">
+  <button class="nav on" data-tab="products"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Products</button>
+  <button class="nav" data-tab="uploads"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m22 8-6 4 6 4z"/></svg>Repair uploads</button>
+  <button class="nav" data-tab="settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</button>
+  <div class="grow"></div>
+  <div class="me">Logged in as <b id="meName"></b></div>
+  <button class="nav" id="logout"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>Log out</button>
+ </aside>
+
+ <main class="main">
+  <div class="mhead"><img src="/assets/img/logo.webp" alt="SK Mobiles" width="375" height="120"><button type="button" id="logoutM">Log out</button></div>
+
+  <!-- Products -->
+  <section id="t-products">
+   <div class="top"><div><h1>Products</h1><p>Products added by staff. Tap one to edit, change photos or hide it.</p></div><button class="btn ghost sm" type="button" id="refreshP">Refresh</button></div>
+   <div class="stats">
+    <div class="stat"><b id="sAll">–</b><span>All products</span></div>
+    <div class="stat"><b id="sNew">–</b><span>New (not on shop yet)</span></div>
+    <div class="stat"><b id="sUp">–</b><span>On Shopify</span></div>
+    <div class="stat"><b id="sHid">–</b><span>Hidden</span></div>
+   </div>
+   <div class="card">
+    <div class="tools">
+     <input class="inp" id="q" type="search" placeholder="Search by name or ID">
+     <select class="inp" id="fCat"><option value="">All categories</option></select>
+     <select class="inp" id="fSt"><option value="">All statuses</option></select>
+    </div>
+    <table>
+     <thead><tr><th>Product</th><th>Category</th><th>Buy</th><th>Sale</th><th>Photos</th><th>Status</th><th>Shown</th></tr></thead>
+     <tbody id="pBody"></tbody>
+    </table>
+    <div class="empty hide" id="pEmpty">No products yet. When staff add products at /khizar, they show here.</div>
+   </div>
+  </section>
+
+  <!-- Uploads -->
+  <section id="t-uploads" class="hide">
+   <div class="top"><div><h1>Repair uploads</h1><p>Daily repair videos and photos uploaded by staff.</p></div><button class="btn ghost sm" type="button" id="refreshU">Refresh</button></div>
+   <div class="uplist" id="uList"></div>
+  </section>
+
+  <!-- Settings -->
+  <section id="t-settings" class="hide">
+   <div class="top"><div><h1>Settings</h1><p>Change your login, or the staff panel password.</p></div></div>
+   <div class="grid2">
+    <form class="card" id="loginSet" novalidate>
+     <h3>Admin login</h3>
+     <p class="muted">Reset codes go to <b id="resetMail"></b>.</p>
+     <label for="su">Username</label>
+     <input class="inp" id="su" autocomplete="username" autocapitalize="none" spellcheck="false">
+     <label for="sp">New password <span class="muted">(leave empty to keep)</span></label>
+     <div class="pw"><input class="inp" type="password" id="sp" autocomplete="new-password"><button type="button" class="eye" data-eye="sp" aria-label="Show password"></button></div>
+     <label for="sp2">Type new password again</label>
+     <div class="pw"><input class="inp" type="password" id="sp2" autocomplete="new-password"><button type="button" class="eye" data-eye="sp2" aria-label="Show password"></button></div>
+     <label for="sc">Current password <span class="muted">(needed)</span></label>
+     <div class="pw"><input class="inp" type="password" id="sc" autocomplete="current-password"><button type="button" class="eye" data-eye="sc" aria-label="Show password"></button></div>
+     <button class="btn" type="submit" id="saveLogin">Save changes</button>
+     <div class="msg hide" id="setMsg"></div>
+    </form>
+    <form class="card" id="staffSet" novalidate>
+     <h3>Staff panel password</h3>
+     <p class="muted">Password for Khizar's page (skmobiles.com/khizar). Username stays <b>khizar</b>.</p>
+     <label for="kp">New staff password</label>
+     <div class="pw"><input class="inp" type="password" id="kp" autocomplete="new-password"><button type="button" class="eye" data-eye="kp" aria-label="Show password"></button></div>
+     <label for="kc">Your admin password <span class="muted">(needed)</span></label>
+     <div class="pw"><input class="inp" type="password" id="kc" autocomplete="current-password"><button type="button" class="eye" data-eye="kc" aria-label="Show password"></button></div>
+     <button class="btn" type="submit" id="saveStaff">Change staff password</button>
+     <div class="msg hide" id="staffMsg"></div>
+    </form>
+   </div>
+  </section>
+ </main>
+
+ <nav class="mobtabs">
+  <button class="on" data-tab="products"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/></svg>Products</button>
+  <button data-tab="uploads"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m22 8-6 4 6 4z"/></svg>Uploads</button>
+  <button data-tab="settings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.2 4.2l2.9 2.9M16.9 16.9l2.9 2.9M1 12h4M19 12h4M4.2 19.8l2.9-2.9M16.9 7.1l2.9-2.9"/></svg>Settings</button>
+ </nav>
+</div>
+
+<!-- Product drawer -->
+<div class="shade hide" id="shade"></div>
+<aside class="drawer hide" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+ <button class="x" type="button" id="dClose" aria-label="Close">×</button>
+ <h2 id="dTitle">Edit product</h2>
+ <p class="muted" id="dMeta"></p>
+ <form id="pForm" novalidate>
+  <label for="pn">Name</label>
+  <input class="inp" id="pn" maxlength="120">
+  <div class="two">
+   <div><label for="pb">Purchase price (Rs)</label><input class="inp" id="pb" type="number" inputmode="numeric" min="0" step="1"></div>
+   <div><label for="ps">Sale price (Rs)</label><input class="inp" id="ps" type="number" inputmode="numeric" min="1" step="1"></div>
+  </div>
+  <div class="two">
+   <div><label for="pc">Category</label><select class="inp" id="pc"></select></div>
+   <div><label for="pst">Status</label><select class="inp" id="pst"></select></div>
+  </div>
+  <div class="toggle"><div><b style="font-weight:600">Show this product</b><div class="muted">Off = hidden. It will not go to the shop.</div></div><label class="sw"><input type="checkbox" id="pv"><i></i></label></div>
+  <label for="pnote">Notes</label>
+  <textarea class="inp" id="pnote" rows="2" maxlength="500"></textarea>
+  <button class="btn" type="submit" id="pSave">Save product</button>
+  <div class="msg hide" id="pMsg"></div>
+ </form>
+ <label style="margin-top:26px">Photos</label>
+ <p class="muted">Removed photos are moved to a "Removed" folder in Drive, not deleted.</p>
+ <div class="photos" id="photos"></div>
+ <p class="muted" style="margin-top:12px"><a id="dFolder" target="_blank" rel="noopener">Open Drive folder</a></p>
+</aside>
+
+<div class="toast hide" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var API='https://script.google.com/macros/s/AKfycbwCPT3M6II1A2MRC0Ep93vask6cOW1hvLs1b1HxB8oSLHPJhnaU_G1O7TGl-K1cKJO7Cw/exec';
+var TK='sk_admin_token';
+var $=function(id){return document.getElementById(id)};
+var token=null, products=[], cats=[], stats=[], cur=null;
+
+// ---- storage: remember me = localStorage (30 days), else sessionStorage (closes with browser) ----
+function store(t,remember){try{localStorage.removeItem(TK);sessionStorage.removeItem(TK);(remember?localStorage:sessionStorage).setItem(TK,t)}catch(e){}}
+function readTok(){try{return localStorage.getItem(TK)||sessionStorage.getItem(TK)}catch(e){return null}}
+function dropTok(){try{localStorage.removeItem(TK);sessionStorage.removeItem(TK)}catch(e){}}
+
+function call(body){
+ return fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}).then(function(r){return r.json()});
+}
+function acall(body){
+ body.token=token;
+ return call(body).then(function(r){if(r&&r.auth===false){logoutLocal('Your session ended. Please log in again.');throw new Error('auth')}return r});
+}
+function msg(el,text,ok){el.textContent=text;el.className='msg '+(ok?'ok':'err')}
+function hideMsg(el){el.className='msg hide'}
+function busy(b,on,label){b.disabled=on;if(on){b.dataset.t=b.textContent;b.innerHTML='<span class="spin"></span>'+(label||'')}else{b.textContent=b.dataset.t||b.textContent}}
+function toast(t){var x=$('toast');x.textContent=t;x.classList.remove('hide');clearTimeout(x._t);x._t=setTimeout(function(){x.classList.add('hide')},2600)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function rs(n){n=Number(n);return isFinite(n)&&n!==''?'Rs '+n.toLocaleString('en-PK'):'–'}
+var NET='No internet or server busy. Try again.';
+
+// ---- eye buttons ----
+var EYE='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+var EYEOFF='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.5 19 2 12 2 12a18 18 0 0 1 5.1-5.9M9.9 5.2A9.5 9.5 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-2.2 3.2"/><path d="M14.1 14.1a3 3 0 1 1-4.2-4.2"/><path d="m2 2 20 20"/></svg>';
+document.querySelectorAll('[data-eye]').forEach(function(b){
+ b.innerHTML=EYE;
+ b.addEventListener('click',function(){var i=$(b.dataset.eye);var show=i.type==='password';i.type=show?'text':'password';b.innerHTML=show?EYEOFF:EYE;b.setAttribute('aria-label',show?'Hide password':'Show password')});
+});
+
+// ---- views ----
+function showAuth(view){
+ $('app').classList.add('hide');$('auth').classList.remove('hide');
+ ['loginForm','forgot1','forgot2'].forEach(function(id){$(id).classList.toggle('hide',id!==view)});
+ document.title='SK Mobiles – Admin login';
+}
+function showApp(){
+ $('auth').classList.add('hide');$('app').classList.remove('hide');
+ document.title='SK Mobiles – Admin';
+ tab('products');
+}
+function logoutLocal(text){
+ token=null;dropTok();closeDrawer();showAuth('loginForm');
+ if(text)msg($('loginMsg'),text,false);
+}
+
+// ---- login ----
+$('loginForm').addEventListener('submit',function(e){
+ e.preventDefault();hideMsg($('loginMsg'));
+ var u=$('lu').value.trim(),p=$('lp').value;
+ if(!u||!p){msg($('loginMsg'),'Enter your username and password.',false);return}
+ var b=$('loginBtn');busy(b,true,' Checking…');
+ var remember=$('rem').checked;
+ call({action:'adminLogin',user:u,pass:p,remember:remember}).then(function(r){
+  if(!r.ok){msg($('loginMsg'),r.error||'Login failed.',false);return}
+  token=r.token;store(token,remember);$('lp').value='';
+  $('meName').textContent=r.user;showApp();
+ }).catch(function(){msg($('loginMsg'),NET,false)}).finally(function(){busy(b,false)});
+});
+
+// ---- forgot ----
+$('toForgot').addEventListener('click',function(){hideMsg($('f1Msg'));showAuth('forgot1')});
+document.querySelectorAll('[data-tologin]').forEach(function(b){b.addEventListener('click',function(){hideMsg($('loginMsg'));showAuth('loginForm')})});
+function sendCode(btn,box,next){
+ busy(btn,true,' Sending…');
+ call({action:'adminForgot'}).then(function(r){
+  if(!r.ok){msg(box,r.error||'Could not send the code.',false);return}
+  if(next){showAuth('forgot2');hideMsg($('f2Msg'));$('fc').focus()}
+  $('f2Sub').textContent='We sent a 6-digit code to '+r.email+'. Enter it below with your new password.';
+  if(!next)msg(box,'New code sent to '+r.email+'.',true);
+ }).catch(function(){msg(box,NET,false)}).finally(function(){busy(btn,false)});
+}
+$('sendCode').addEventListener('click',function(){hideMsg($('f1Msg'));sendCode(this,$('f1Msg'),true)});
+$('resend').addEventListener('click',function(){hideMsg($('f2Msg'));sendCode(this,$('f2Msg'),false)});
+$('forgot2').addEventListener('submit',function(e){
+ e.preventDefault();var box=$('f2Msg');hideMsg(box);
+ var c=$('fc').value.trim(),p=$('fp').value,p2=$('fp2').value;
+ if(!/^\d{6}$/.test(c)){msg(box,'Enter the 6-digit code from the email.',false);return}
+ if(p.length<8||!/[A-Za-z]/.test(p)||!/\d/.test(p)){msg(box,'Use at least 8 characters with letters and numbers.',false);return}
+ if(p!==p2){msg(box,'The two passwords are not the same.',false);return}
+ var b=$('resetBtn');busy(b,true,' Saving…');
+ call({action:'adminReset',code:c,pass:p}).then(function(r){
+  if(!r.ok){msg(box,r.error||'Could not reset.',false);return}
+  $('fc').value=$('fp').value=$('fp2').value='';
+  $('lu').value=r.user||'';showAuth('loginForm');msg($('loginMsg'),'Password changed. Log in with your new password.',true);$('lp').focus();
+ }).catch(function(){msg(box,NET,false)}).finally(function(){busy(b,false)});
+});
+
+// ---- logout ----
+function doLogout(){var t=token;logoutLocal();if(t)call({action:'adminLogout',token:t}).catch(function(){})}
+$('logout').addEventListener('click',doLogout);$('logoutM').addEventListener('click',doLogout);
+
+// ---- tabs ----
+var loaded={};
+function tab(name){
+ document.querySelectorAll('[data-tab]').forEach(function(b){b.classList.toggle('on',b.dataset.tab===name)});
+ ['products','uploads','settings'].forEach(function(n){$('t-'+n).classList.toggle('hide',n!==name)});
+ if(name==='products'&&!loaded.p)loadProducts();
+ if(name==='uploads'&&!loaded.u)loadUploads();
+ if(name==='settings')loadMe();
+ window.scrollTo(0,0);
+}
+document.querySelectorAll('[data-tab]').forEach(function(b){b.addEventListener('click',function(){tab(b.dataset.tab)})});
+
+// ---- products ----
+function loadProducts(){
+ loaded.p=true;$('pBody').innerHTML='<tr><td colspan="7" class="empty">Loading…</td></tr>';$('pEmpty').classList.add('hide');
+ acall({action:'adminProducts'}).then(function(r){
+  if(!r.ok){$('pBody').innerHTML='<tr><td colspan="7" class="empty">'+esc(r.error)+'</td></tr>';return}
+  products=r.items;
+  if(!cats.length){cats=r.categories;stats=r.statuses;fillSelects()}
+  renderProducts();
+ }).catch(function(e){if(e.message!=='auth'){$('pBody').innerHTML='<tr><td colspan="7" class="empty">'+NET+'</td></tr>';loaded.p=false}});
+}
+function fillSelects(){
+ cats.forEach(function(c){$('fCat').add(new Option(c,c));});$('pc').add(new Option('— Not set —',''));cats.forEach(function(c){$('pc').add(new Option(c,c))});
+ stats.forEach(function(s){$('fSt').add(new Option(s,s));$('pst').add(new Option(s,s))});
+}
+function renderProducts(){
+ var q=$('q').value.trim().toLowerCase(),fc=$('fCat').value,fs=$('fSt').value;
+ $('sAll').textContent=products.length;
+ $('sNew').textContent=products.filter(function(p){return p.status==='New'}).length;
+ $('sUp').textContent=products.filter(function(p){return p.status==='Uploaded'}).length;
+ $('sHid').textContent=products.filter(function(p){return !p.visible}).length;
+ var list=products.filter(function(p){
+  return (!q||(p.name+' '+p.id).toLowerCase().indexOf(q)>=0)&&(!fc||p.category===fc)&&(!fs||p.status===fs);
+ });
+ $('pEmpty').classList.toggle('hide',products.length>0);
+ if(!list.length){$('pBody').innerHTML=products.length?'<tr><td colspan="7" class="empty">No match.</td></tr>':'';return}
+ $('pBody').innerHTML=list.map(function(p){
+  var st=p.status==='Uploaded'?'gr':(p.status==='New'?'or':'');
+  return '<tr data-row="'+p.row+'"><td class="nm">'+esc(p.name)+'<div class="muted">'+esc(p.id)+' · '+esc(p.date)+'</div></td>'+
+   '<td data-l="Category">'+(p.category?esc(p.category):'<span class="muted">Not set</span>')+'</td>'+
+   '<td data-l="Buy">'+rs(p.purchase)+'</td><td data-l="Sale">'+rs(p.sale)+'</td>'+
+   '<td data-l="Photos">'+esc(p.pics)+'</td><td data-l="Status"><span class="pill '+st+'">'+esc(p.status)+'</span></td>'+
+   '<td data-l="Shown">'+(p.visible?'<span class="pill gr">Shown</span>':'<span class="pill gy">Hidden</span>')+'</td></tr>';
+ }).join('');
+}
+['q','fCat','fSt'].forEach(function(id){$(id).addEventListener('input',renderProducts)});
+$('pBody').addEventListener('click',function(e){var tr=e.target.closest('tr[data-row]');if(tr)openDrawer(Number(tr.dataset.row))});
+$('refreshP').addEventListener('click',loadProducts);
+
+function openDrawer(row){
+ cur=products.filter(function(p){return p.row===row})[0];if(!cur)return;
+ $('dTitle').textContent=cur.name;$('dMeta').textContent=cur.id+' · added by '+cur.by+' on '+cur.date;
+ $('pn').value=cur.name;$('pb').value=cur.purchase;$('ps').value=cur.sale;$('pc').value=cur.category;$('pst').value=cur.status;$('pv').checked=cur.visible;$('pnote').value=cur.notes;
+ $('dFolder').href=cur.folder;hideMsg($('pMsg'));
+ $('shade').classList.remove('hide');$('drawer').classList.remove('hide');document.body.style.overflow='hidden';
+ loadPhotos();
+}
+function closeDrawer(){$('shade').classList.add('hide');$('drawer').classList.add('hide');document.body.style.overflow='';cur=null}
+$('dClose').addEventListener('click',closeDrawer);$('shade').addEventListener('click',closeDrawer);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&cur)closeDrawer()});
+
+$('pForm').addEventListener('submit',function(e){
+ e.preventDefault();var box=$('pMsg');hideMsg(box);
+ var d={action:'adminProductSave',row:cur.row,id:cur.id,name:$('pn').value.trim(),purchase:Number($('pb').value),sale:Number($('ps').value),category:$('pc').value,status:$('pst').value,visible:$('pv').checked,notes:$('pnote').value.trim()};
+ if(!d.name){msg(box,'Name is missing.',false);return}
+ if($('pb').value===''||!(d.purchase>=0)||!(d.sale>0)){msg(box,'Check the prices.',false);return}
+ var b=$('pSave');busy(b,true,' Saving…');
+ acall(d).then(function(r){
+  if(!r.ok){msg(box,r.error||'Not saved.',false);return}
+  ['name','purchase','sale','category','status','visible','notes'].forEach(function(k){cur[k]=d[k]});
+  renderProducts();toast('Product saved');closeDrawer();
+ }).catch(function(e2){if(e2.message!=='auth')msg(box,NET,false)}).finally(function(){busy(b,false)});
+});
+
+function loadPhotos(){
+ var box=$('photos'),p=cur;box.innerHTML='<p class="muted">Loading photos…</p>';
+ acall({action:'adminPhotos',row:p.row,id:p.id}).then(function(r){
+  if(cur!==p)return;
+  if(!r.ok){box.innerHTML='<p class="muted">'+esc(r.error)+'</p>';return}
+  box.innerHTML=r.items.map(function(f){
+   return '<div class="ph">'+(f.thumb?'<img alt="" src="data:image/png;base64,'+f.thumb+'">':'<a href="'+esc(f.url)+'" target="_blank" rel="noopener" class="muted" style="display:grid;place-items:center;height:100%">Open</a>')+
+    '<button type="button" data-rm="'+esc(f.id)+'" aria-label="Remove photo" title="Remove">×</button></div>';
+  }).join('')+'<label class="addph">+ Add photos<input type="file" id="addPics" accept="image/*" multiple></label>';
+  $('addPics').addEventListener('change',addPhotos);
+ }).catch(function(e){if(e.message!=='auth')box.innerHTML='<p class="muted">'+NET+'</p>'});
+}
+$('photos').addEventListener('click',function(e){
+ var b=e.target.closest('[data-rm]');if(!b)return;
+ if(b.dataset.armed!=='1'){b.dataset.armed='1';b.textContent='✓';b.title='Tap again to remove';toast('Tap ✓ again to remove this photo');setTimeout(function(){if(b.isConnected){b.dataset.armed='';b.textContent='×'}},3000);return}
+ b.disabled=true;
+ acall({action:'adminPhotoRemove',row:cur.row,id:cur.id,fileId:b.dataset.rm}).then(function(r){
+  if(!r.ok){toast(r.error||'Not removed');b.disabled=false;return}
+  cur.pics=r.count;renderProducts();toast('Photo moved to "Removed" folder');loadPhotos();
+ }).catch(function(e2){if(e2.message!=='auth'){toast(NET);b.disabled=false}});
+});
+function shrink(file){
+ return new Promise(function(res,rej){
+  var img=new Image(),url=URL.createObjectURL(file);
+  img.onload=function(){
+   var max=1600,w=img.naturalWidth,h=img.naturalHeight,s=Math.min(1,max/Math.max(w,h));
+   var c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(h*s);
+   c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+   res({mime:'image/jpeg',data:c.toDataURL('image/jpeg',.86).split(',')[1]});
+  };
+  img.onerror=function(){URL.revokeObjectURL(url);rej(new Error('bad image'))};
+  img.src=url;
+ });
+}
+function addPhotos(e){
+ var files=[].slice.call(e.target.files||[]).slice(0,10);if(!files.length)return;
+ var p=cur;toast('Uploading '+files.length+' photo'+(files.length>1?'s':'')+'…');
+ Promise.all(files.map(shrink)).then(function(imgs){
+  return acall({action:'adminPhotoAdd',row:p.row,id:p.id,images:imgs});
+ }).then(function(r){
+  if(!r.ok){toast(r.error||'Upload failed');return}
+  p.pics=r.count;renderProducts();toast('Photos added');if(cur===p)loadPhotos();
+ }).catch(function(e2){if(e2.message!=='auth')toast('Upload failed. Try again.')});
+}
+
+// ---- uploads ----
+function loadUploads(){
+ loaded.u=true;var box=$('uList');box.innerHTML='<div class="card empty">Loading…</div>';
+ acall({action:'adminUploads'}).then(function(r){
+  if(!r.ok){box.innerHTML='<div class="card empty">'+esc(r.error)+'</div>';return}
+  if(!r.items.length){box.innerHTML='<div class="card empty">No uploads yet.</div>';return}
+  box.innerHTML=r.items.map(function(u){
+   var d=new Date(u.at).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+   var none=!u.videos&&!u.photos;
+   return '<div class="up"><div><b>'+esc(u.topic||u.name)+'</b><span class="muted">'+esc(d)+' · '+u.videos+' video'+(u.videos===1?'':'s')+' · '+u.photos+' photo'+(u.photos===1?'':'s')+'</span>'+(none?' <span class="pill or">Empty</span>':'')+'</div>'+
+    '<a class="btn ghost sm" href="'+esc(u.url)+'" target="_blank" rel="noopener">Open</a></div>';
+  }).join('');
+ }).catch(function(e){if(e.message!=='auth'){box.innerHTML='<div class="card empty">'+NET+'</div>';loaded.u=false}});
+}
+$('refreshU').addEventListener('click',loadUploads);
+
+// ---- settings ----
+function loadMe(){
+ acall({action:'adminMe'}).then(function(r){if(r.ok){$('su').value=r.user;$('meName').textContent=r.user;$('resetMail').textContent=r.email}}).catch(function(){});
+}
+$('loginSet').addEventListener('submit',function(e){
+ e.preventDefault();var box=$('setMsg');hideMsg(box);
+ var u=$('su').value.trim().toLowerCase(),p=$('sp').value,p2=$('sp2').value,c=$('sc').value;
+ if(!c){msg(box,'Enter your current password.',false);return}
+ if(p&&(p.length<8||!/[A-Za-z]/.test(p)||!/\d/.test(p))){msg(box,'New password: at least 8 characters with letters and numbers.',false);return}
+ if(p!==p2){msg(box,'The two new passwords are not the same.',false);return}
+ var b=$('saveLogin');busy(b,true,' Saving…');
+ acall({action:'adminChangeLogin',user:u,pass:p,current:c}).then(function(r){
+  if(!r.ok){msg(box,r.error||'Not saved.',false);return}
+  $('sp').value=$('sp2').value=$('sc').value='';$('meName').textContent=r.user;$('su').value=r.user;
+  msg(box,p?'Saved. Other devices are logged out.':'Saved.',true);
+ }).catch(function(e2){if(e2.message!=='auth')msg(box,NET,false)}).finally(function(){busy(b,false)});
+});
+$('staffSet').addEventListener('submit',function(e){
+ e.preventDefault();var box=$('staffMsg');hideMsg(box);
+ var p=$('kp').value,c=$('kc').value;
+ if(p.length<8||!/[A-Za-z]/.test(p)||!/\d/.test(p)){msg(box,'Use at least 8 characters with letters and numbers.',false);return}
+ if(!c){msg(box,'Enter your admin password.',false);return}
+ var b=$('saveStaff');busy(b,true,' Saving…');
+ acall({action:'adminStaffPass',pass:p,current:c}).then(function(r){
+  if(!r.ok){msg(box,r.error||'Not saved.',false);return}
+  $('kp').value=$('kc').value='';msg(box,'Staff password changed. Tell Khizar the new one.',true);
+ }).catch(function(e2){if(e2.message!=='auth')msg(box,NET,false)}).finally(function(){busy(b,false)});
+});
+
+// ---- start ----
+token=readTok();
+if(token){
+ acall({action:'adminMe'}).then(function(r){if(r.ok){$('meName').textContent=r.user;showApp()}}).catch(function(e){if(e.message!=='auth')showAuth('loginForm'),msg($('loginMsg'),NET,false)});
+}else showAuth('loginForm');
+})();
+</script>
+</body>
+</html>
